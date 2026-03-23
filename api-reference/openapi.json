@@ -39,65 +39,139 @@
       "SandwichIncident": {
         "type": "object",
         "properties": {
-          "attacker_signature": { "type": "string", "description": "Attacker's transaction signature" },
-          "attacker_signer": { "type": "string", "description": "Attacker's wallet address" },
-          "slot": { "type": "integer", "description": "Slot of the attacker's transaction" },
-          "poh_tick": { "type": "string", "description": "PoH tick position (BigInt as string)" },
-          "poh_tick_offset": { "type": "string", "description": "PoH tick distance from victim (negative = before)" },
-          "interaction_type": { "type": "string", "enum": ["sandwich", "frontrun", "backrun"], "description": "Type of MEV interaction" },
-          "pool_address": { "type": "string", "description": "DEX pool where the interaction occurred" },
-          "pool_label": { "type": "string", "description": "Human-readable pool label" },
-          "success": { "type": "boolean", "description": "Whether the attacker's transaction executed successfully" }
+          "attacker_signature": {
+            "type": "string",
+            "description": "Attacker's transaction signature"
+          },
+          "attacker_signer": {
+            "type": "string",
+            "description": "Attacker's wallet address"
+          },
+          "slot": {
+            "type": "integer",
+            "description": "Slot of the attacker's transaction"
+          },
+          "poh_tick": {
+            "type": "string",
+            "description": "PoH tick position (BigInt as string)"
+          },
+          "poh_tick_offset": {
+            "type": "string",
+            "description": "PoH tick distance from victim (negative = before)"
+          },
+          "interaction_type": {
+            "type": "string",
+            "enum": [
+              "sandwich_frontrun",
+              "sandwich_backrun"
+            ],
+            "description": "Type of sandwich leg (only sandwich incidents are returned)"
+          },
+          "pool_address": {
+            "type": "string",
+            "description": "DEX pool where the interaction occurred"
+          },
+          "pool_label": {
+            "type": "string",
+            "description": "Human-readable pool label"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the attacker's transaction executed successfully"
+          }
         }
       },
       "SandwichCheckResult": {
         "type": "object",
         "properties": {
-          "signature": { "type": "string", "description": "Input transaction signature" },
-          "found": { "type": "boolean", "description": "Whether the transaction was found in timing_data" },
-          "slot": { "type": "integer", "description": "Slot number" },
-          "poh_tick": { "type": "string", "description": "PoH tick position (BigInt as string)" },
-          "signer": { "type": "string", "description": "Wallet that signed the transaction" },
+          "signature": {
+            "type": "string",
+            "description": "Input transaction signature"
+          },
+          "found": {
+            "type": "boolean",
+            "description": "Whether the transaction was found in timing_data"
+          },
+          "slot": {
+            "type": "integer",
+            "description": "Slot number"
+          },
+          "poh_tick": {
+            "type": "string",
+            "description": "PoH tick position (BigInt as string)"
+          },
+          "signer": {
+            "type": "string",
+            "description": "Wallet that signed the transaction"
+          },
           "pools": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "pool_address": { "type": "string" },
-                "pool_label": { "type": "string" },
-                "dex_name": { "type": "string" }
+                "pool_address": {
+                  "type": "string"
+                },
+                "pool_label": {
+                  "type": "string"
+                },
+                "dex_name": {
+                  "type": "string"
+                }
               }
             }
           },
           "incidents": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/SandwichIncident" }
+            "items": {
+              "$ref": "#/components/schemas/SandwichIncident"
+            }
           },
-          "sandwich_detected": { "type": "boolean", "description": "Whether a sandwich attack was detected" },
-          "mev_score": { "type": "integer", "description": "MEV risk score (0-100). Formula: min(100, round((sandwich*10 + frontrun*3 + backrun*1) / total * 50))" },
-          "success": { "type": "boolean", "description": "Whether the victim's transaction executed successfully" }
+          "sandwich_detected": {
+            "type": "boolean",
+            "description": "Whether a sandwich attack was detected"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the victim's transaction executed successfully"
+          }
         }
       },
       "SandwichCheckResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean", "example": true },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
           "data": {
             "type": "object",
             "properties": {
               "results": {
                 "type": "array",
-                "items": { "$ref": "#/components/schemas/SandwichCheckResult" }
+                "items": {
+                  "$ref": "#/components/schemas/SandwichCheckResult"
+                }
               },
               "summary": {
                 "type": "object",
                 "properties": {
-                  "total_checked": { "type": "integer", "description": "Number of signatures submitted" },
-                  "total_found": { "type": "integer", "description": "Number found in timing_data" },
-                  "total_sandwich_attacks": { "type": "integer", "description": "Number of sandwich attacks detected" },
-                  "total_frontrun_incidents": { "type": "integer", "description": "Total frontrun incidents" },
-                  "total_backrun_incidents": { "type": "integer", "description": "Total backrun incidents" },
-                  "slot_range_used": { "type": "integer", "description": "Slot range used for the analysis" }
+                  "total_checked": {
+                    "type": "integer",
+                    "description": "Number of signatures submitted"
+                  },
+                  "total_found": {
+                    "type": "integer",
+                    "description": "Number found in timing_data"
+                  },
+                  "total_sandwich_attacks": {
+                    "type": "integer",
+                    "description": "Number of sandwich attacks detected"
+                  },
+                  "slot_range_used": {
+                    "type": "integer",
+                    "description": "Slot range used for the analysis"
+                  }
                 }
               }
             }
@@ -169,8 +243,15 @@
           },
           "details": {
             "oneOf": [
-              { "type": "string" },
-              { "type": "array", "items": { "type": "string" } }
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             ],
             "description": "Detailed error information"
           },
@@ -189,15 +270,24 @@
         "summary": "Analyze Trade Context",
         "description": "Analyzes all transactions that touched a specific account (market) within ±N slots of your transaction. Shows PoH tick offsets to understand who traded before/after you. Essential for front-running and sandwich attack detection.",
         "operationId": "analyzeTrade",
-        "tags": ["Trade Analysis"],
-        "security": [{ "ApiKeyAuth": [] }],
+        "tags": [
+          "Trade Analysis"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signature", "account_id"],
+                "required": [
+                  "signature",
+                  "account_id"
+                ],
                 "properties": {
                   "signature": {
                     "type": "string",
@@ -266,7 +356,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "example": true },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
@@ -276,9 +369,18 @@
                         "slot_range": {
                           "type": "object",
                           "properties": {
-                            "from": { "type": "integer", "example": 370537737 },
-                            "to": { "type": "integer", "example": 370537745 },
-                            "range": { "type": "integer", "example": 4 }
+                            "from": {
+                              "type": "integer",
+                              "example": 370537737
+                            },
+                            "to": {
+                              "type": "integer",
+                              "example": 370537745
+                            },
+                            "range": {
+                              "type": "integer",
+                              "example": 4
+                            }
                           }
                         },
                         "results_by_slot": {
@@ -286,7 +388,9 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "slot": { "type": "integer" },
+                              "slot": {
+                                "type": "integer"
+                              },
                               "slot_offset": {
                                 "type": "integer",
                                 "description": "Negative = before, 0 = same slot, Positive = after"
@@ -311,13 +415,17 @@
                                         "matched_in_written": {
                                           "type": "boolean"
                                         },
-                                        "is_original": { "type": "boolean" }
+                                        "is_original": {
+                                          "type": "boolean"
+                                        }
                                       }
                                     }
                                   ]
                                 }
                               },
-                              "transaction_count": { "type": "integer" }
+                              "transaction_count": {
+                                "type": "integer"
+                              }
                             }
                           }
                         },
@@ -327,10 +435,18 @@
                             "total_matching_transactions": {
                               "type": "integer"
                             },
-                            "displayed_in_page": { "type": "integer" },
-                            "slots_with_activity": { "type": "integer" },
-                            "earliest_poh_tick_offset": { "type": "integer" },
-                            "latest_poh_tick_offset": { "type": "integer" }
+                            "displayed_in_page": {
+                              "type": "integer"
+                            },
+                            "slots_with_activity": {
+                              "type": "integer"
+                            },
+                            "earliest_poh_tick_offset": {
+                              "type": "integer"
+                            },
+                            "latest_poh_tick_offset": {
+                              "type": "integer"
+                            }
                           }
                         }
                       }
@@ -338,9 +454,15 @@
                     "pagination": {
                       "type": "object",
                       "properties": {
-                        "current_page": { "type": "integer" },
-                        "total_items": { "type": "integer" },
-                        "has_next_page": { "type": "boolean" }
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "total_items": {
+                          "type": "integer"
+                        },
+                        "has_next_page": {
+                          "type": "boolean"
+                        }
                       }
                     }
                   }
@@ -352,7 +474,9 @@
             "description": "Validation failed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Validation failed",
                   "details": [
@@ -367,7 +491,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Invalid API key",
                   "details": "API key is invalid or has been revoked",
@@ -380,7 +506,9 @@
             "description": "Forbidden - Subscription required",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Subscription required",
                   "details": "Active subscription (trial, active, or grace_period) required",
@@ -395,11 +523,15 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/Error" },
+                    {
+                      "$ref": "#/components/schemas/Error"
+                    },
                     {
                       "type": "object",
                       "properties": {
-                        "retry_after_seconds": { "type": "integer" }
+                        "retry_after_seconds": {
+                          "type": "integer"
+                        }
                       }
                     }
                   ]
@@ -421,15 +553,24 @@
         "summary": "Backfill Transaction",
         "description": "Backfills transaction data for a given signature and account into the analytics database. Useful for ensuring specific transactions are tracked and analyzed within a specified slot range. The backfill runs asynchronously and returns immediately with a request ID for tracking.",
         "operationId": "backfillTransaction",
-        "tags": ["Data Management"],
-        "security": [{ "ApiKeyAuth": [] }],
+        "tags": [
+          "Data Management"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signature", "account"],
+                "required": [
+                  "signature",
+                  "account"
+                ],
                 "properties": {
                   "signature": {
                     "type": "string",
@@ -464,7 +605,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
@@ -475,9 +618,15 @@
                         "query_info": {
                           "type": "object",
                           "properties": {
-                            "signature": { "type": "string" },
-                            "account": { "type": "string" },
-                            "slot_range": { "type": "integer" },
+                            "signature": {
+                              "type": "string"
+                            },
+                            "account": {
+                              "type": "string"
+                            },
+                            "slot_range": {
+                              "type": "integer"
+                            },
                             "request_id": {
                               "type": "string",
                               "example": "abc123xyz"
@@ -495,9 +644,15 @@
               }
             }
           },
-          "400": { "$ref": "#/paths/~1analyze-trade/post/responses/400" },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" }
+          "400": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          }
         }
       }
     },
@@ -506,8 +661,14 @@
         "summary": "Get Transaction Details",
         "description": "Retrieves detailed information about a specific transaction including slot, timestamp, success status, fee, tokens involved, and market information with human-readable labels and tags.",
         "operationId": "getTransaction",
-        "tags": ["Transactions"],
-        "security": [{ "ApiKeyAuth": [] }],
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "signature",
@@ -529,12 +690,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "signature": { "type": "string" },
-                        "slot": { "type": "integer" },
+                        "signature": {
+                          "type": "string"
+                        },
+                        "slot": {
+                          "type": "integer"
+                        },
                         "blockTime": {
                           "type": "integer",
                           "description": "Unix timestamp"
@@ -549,7 +716,9 @@
                         },
                         "tokens": {
                           "type": "array",
-                          "items": { "type": "string" },
+                          "items": {
+                            "type": "string"
+                          },
                           "description": "Token mint addresses involved"
                         },
                         "leader": {
@@ -576,15 +745,22 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "poolAddress": { "type": "string" },
+                              "poolAddress": {
+                                "type": "string"
+                              },
                               "account_label": {
                                 "type": "string",
                                 "example": "Pump.fun AMM (Percolator-WSOL) Market"
                               },
                               "account_tags": {
                                 "type": "array",
-                                "items": { "type": "string" },
-                                "example": ["pump.fun amm", "market"]
+                                "items": {
+                                  "type": "string"
+                                },
+                                "example": [
+                                  "pump.fun amm",
+                                  "market"
+                                ]
                               }
                             }
                           }
@@ -596,11 +772,19 @@
               }
             }
           },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
           "404": {
             "description": "Transaction not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Transaction not found",
                   "details": "No transaction found with signature: abc123...",
@@ -609,9 +793,9 @@
               }
             }
           },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
         }
       }
     },
@@ -620,8 +804,14 @@
         "summary": "Fetch Wallet Signatures",
         "description": "Fetches transaction signatures for a wallet with intelligent caching, pagination, and time filtering. Features 5-minute cache TTL, custom time windows (within 7 days), and efficient RPC batching. Returns lightweight signature data that can be enhanced with other endpoints.",
         "operationId": "getWalletSignatures",
-        "tags": ["Wallets"],
-        "security": [{ "ApiKeyAuth": [] }],
+        "tags": [
+          "Wallets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "address",
@@ -681,7 +871,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
@@ -690,24 +882,40 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "signature": { "type": "string" },
-                              "slot": { "type": "integer" },
-                              "blockTime": { "type": "integer" },
-                              "success": { "type": "boolean" }
+                              "signature": {
+                                "type": "string"
+                              },
+                              "slot": {
+                                "type": "integer"
+                              },
+                              "blockTime": {
+                                "type": "integer"
+                              },
+                              "success": {
+                                "type": "boolean"
+                              }
                             }
                           }
                         },
                         "pagination": {
                           "type": "object",
                           "properties": {
-                            "has_more": { "type": "boolean" },
+                            "has_more": {
+                              "type": "boolean"
+                            },
                             "next_before": {
                               "type": "string",
                               "description": "Use as 'before' parameter for next page"
                             },
-                            "returned": { "type": "integer" },
-                            "total_in_window": { "type": "integer" },
-                            "from_cache": { "type": "boolean" }
+                            "returned": {
+                              "type": "integer"
+                            },
+                            "total_in_window": {
+                              "type": "integer"
+                            },
+                            "from_cache": {
+                              "type": "boolean"
+                            }
                           }
                         },
                         "metadata": {
@@ -717,11 +925,21 @@
                               "type": "integer",
                               "example": 168
                             },
-                            "time_window_start": { "type": "integer" },
-                            "time_window_end": { "type": "integer" },
-                            "wallet_address": { "type": "string" },
-                            "processing_time_ms": { "type": "integer" },
-                            "cache_key": { "type": "string" }
+                            "time_window_start": {
+                              "type": "integer"
+                            },
+                            "time_window_end": {
+                              "type": "integer"
+                            },
+                            "wallet_address": {
+                              "type": "string"
+                            },
+                            "processing_time_ms": {
+                              "type": "integer"
+                            },
+                            "cache_key": {
+                              "type": "string"
+                            }
                           }
                         }
                       }
@@ -731,10 +949,18 @@
               }
             }
           },
-          "400": { "$ref": "#/paths/~1analyze-trade/post/responses/400" },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
+          "400": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
         }
       }
     },
@@ -743,15 +969,23 @@
         "summary": "Enhance Transaction Metadata",
         "description": "Fetches detailed transaction metadata from Solana RPC including fees, error status, and balance changes. Complements /analyze-trade by providing financial details for each transaction signature. Shows SOL/token balance changes, fees, and success/failure status focused exclusively on the transaction signer. Features 48-hour Redis caching.",
         "operationId": "enhanceMetadata",
-        "tags": ["Transactions"],
-        "security": [{ "ApiKeyAuth": [] }],
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signature"],
+                "required": [
+                  "signature"
+                ],
                 "properties": {
                   "signature": {
                     "type": "string",
@@ -772,13 +1006,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "signature": { "type": "string" },
-                        "slot": { "type": "integer" },
-                        "blockTime": { "type": "integer" },
+                        "signature": {
+                          "type": "string"
+                        },
+                        "slot": {
+                          "type": "integer"
+                        },
+                        "blockTime": {
+                          "type": "integer"
+                        },
                         "metadata": {
                           "type": "object",
                           "properties": {
@@ -791,15 +1033,25 @@
                               "nullable": true,
                               "description": "Error object if transaction failed"
                             },
-                            "compute_units_consumed": { "type": "integer" },
+                            "compute_units_consumed": {
+                              "type": "integer"
+                            },
                             "signer": {
                               "type": "string",
                               "description": "Transaction signer pubkey"
                             },
-                            "leader": { "type": "string" },
-                            "client": { "type": "string" },
-                            "client_version": { "type": "string" },
-                            "validator_name": { "type": "string" },
+                            "leader": {
+                              "type": "string"
+                            },
+                            "client": {
+                              "type": "string"
+                            },
+                            "client_version": {
+                              "type": "string"
+                            },
+                            "validator_name": {
+                              "type": "string"
+                            },
                             "balance_changes": {
                               "type": "object",
                               "description": "Balance changes for signer only",
@@ -809,18 +1061,26 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
-                                      "owner": { "type": "string" },
-                                      "mint": { "type": "string" },
+                                      "owner": {
+                                        "type": "string"
+                                      },
+                                      "mint": {
+                                        "type": "string"
+                                      },
                                       "delta_base": {
                                         "type": "string",
                                         "description": "Raw token amount change"
                                       },
-                                      "decimals": { "type": "integer" },
+                                      "decimals": {
+                                        "type": "integer"
+                                      },
                                       "delta_ui": {
                                         "type": "number",
                                         "description": "Human-readable amount change"
                                       },
-                                      "account_index": { "type": "integer" }
+                                      "account_index": {
+                                        "type": "integer"
+                                      }
                                     }
                                   }
                                 },
@@ -829,30 +1089,54 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
-                                      "pubkey": { "type": "string" },
-                                      "delta_lamports": { "type": "string" },
-                                      "delta_sol": { "type": "number" },
-                                      "account_index": { "type": "integer" }
+                                      "pubkey": {
+                                        "type": "string"
+                                      },
+                                      "delta_lamports": {
+                                        "type": "string"
+                                      },
+                                      "delta_sol": {
+                                        "type": "number"
+                                      },
+                                      "account_index": {
+                                        "type": "integer"
+                                      }
                                     }
                                   }
                                 },
-                                "fee_lamports": { "type": "integer" },
+                                "fee_lamports": {
+                                  "type": "integer"
+                                },
                                 "summary": {
                                   "type": "object",
                                   "properties": {
-                                    "total_spl_changes": { "type": "integer" },
-                                    "total_sol_changes": { "type": "integer" }
+                                    "total_spl_changes": {
+                                      "type": "integer"
+                                    },
+                                    "total_sol_changes": {
+                                      "type": "integer"
+                                    }
                                   }
                                 }
                               }
                             },
-                            "signer_pre_balance": { "type": "integer" },
-                            "signer_post_balance": { "type": "integer" },
-                            "signer_pre_token_balances": { "type": "array" },
-                            "signer_post_token_balances": { "type": "array" }
+                            "signer_pre_balance": {
+                              "type": "integer"
+                            },
+                            "signer_post_balance": {
+                              "type": "integer"
+                            },
+                            "signer_pre_token_balances": {
+                              "type": "array"
+                            },
+                            "signer_post_token_balances": {
+                              "type": "array"
+                            }
                           }
                         },
-                        "processing_time_ms": { "type": "integer" }
+                        "processing_time_ms": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -860,14 +1144,22 @@
               }
             }
           },
-          "400": { "$ref": "#/paths/~1analyze-trade/post/responses/400" },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
+          "400": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
           "404": {
             "description": "Transaction not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Transaction not found",
                   "details": "No transaction found with signature: abc123...",
@@ -876,289 +1168,9 @@
               }
             }
           },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
-        }
-      }
-    },
-    "/mev/discover-competitors": {
-      "post": {
-        "summary": "Discover MEV Competitors",
-        "description": "Discover all competitor wallets that frequently frontrun/backrun a target wallet on the same DEX pools. This endpoint submits an asynchronous job and returns a jobId. Poll `/mev/job-status/:jobId` to retrieve results. Features intelligent caching (10min TTL) and filters to DEX pools only.",
-        "operationId": "discoverCompetitors",
-        "tags": ["MEV Analysis"],
-        "security": [{ "SupabaseJWT": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["wallet_address"],
-                "properties": {
-                  "wallet_address": {
-                    "type": "string",
-                    "description": "Target wallet address to analyze (base58, 32-44 characters)",
-                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
-                    "example": "FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump"
-                  },
-                  "time_range_days": {
-                    "type": "integer",
-                    "description": "Number of days to analyze",
-                    "default": 7,
-                    "minimum": 1,
-                    "maximum": 30,
-                    "example": 7
-                  },
-                  "min_interactions": {
-                    "type": "integer",
-                    "description": "Minimum number of interactions to consider a competitor",
-                    "default": 3,
-                    "minimum": 1,
-                    "example": 3
-                  },
-                  "limit": {
-                    "type": "integer",
-                    "description": "Maximum number of competitors to return",
-                    "default": 20,
-                    "minimum": 1,
-                    "maximum": 100,
-                    "example": 20
-                  },
-                  "slot_window": {
-                    "type": "integer",
-                    "description": "Slot window for considering proximity (±N slots)",
-                    "default": 4,
-                    "minimum": 1,
-                    "example": 4
-                  }
-                }
-              }
-            }
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
           }
-        },
-        "responses": {
-          "200": {
-            "description": "Job submitted successfully or cached result returned",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "description": "Job queued response",
-                      "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "jobId": {
-                          "type": "string",
-                          "example": "abc123def456"
-                        },
-                        "status": { "type": "string", "example": "queued" },
-                        "message": {
-                          "type": "string",
-                          "example": "Analysis started. Poll /mev/job-status/:jobId for updates."
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "description": "Cached result response (immediate)",
-                      "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "cached": { "type": "boolean", "example": true },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "competitors": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "wallet": { "type": "string" },
-                                  "mev_score": {
-                                    "type": "number",
-                                    "description": "Score 0-100"
-                                  },
-                                  "frontrun_count": { "type": "integer" },
-                                  "backrun_count": { "type": "integer" },
-                                  "sandwich_count": { "type": "integer" },
-                                  "total_interactions": { "type": "integer" }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
-                "example": {
-                  "error": "Invalid wallet address",
-                  "details": "wallet_address must be a valid base58 string (32-44 characters)",
-                  "timestamp": "2025-10-02T15:30:45.123Z"
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
-        }
-      }
-    },
-    "/mev/validate-competition": {
-      "post": {
-        "summary": "Validate MEV Competition",
-        "description": "Compare two specific wallets to generate detailed MEV interaction statistics (how often wallet B frontruns/backruns wallet A). Submits an async job and returns a jobId. Poll `/mev/job-status/:jobId` for results. Page 1 results are cached for 5 minutes.",
-        "operationId": "validateCompetition",
-        "tags": ["MEV Analysis"],
-        "security": [{ "SupabaseJWT": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["wallet_a", "wallet_b"],
-                "properties": {
-                  "wallet_a": {
-                    "type": "string",
-                    "description": "First wallet address (base58)",
-                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
-                    "example": "FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump"
-                  },
-                  "wallet_b": {
-                    "type": "string",
-                    "description": "Second wallet address to compare (base58)",
-                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
-                    "example": "HwraPsoNmYpumpFnmStvzQ27Pm4U8r3M6gPD7mnk6ST6"
-                  },
-                  "time_range_days": {
-                    "type": "integer",
-                    "description": "Number of days to analyze",
-                    "default": 7,
-                    "minimum": 1,
-                    "maximum": 30,
-                    "example": 7
-                  },
-                  "slot_window": {
-                    "type": "integer",
-                    "description": "Slot window for proximity (±N slots)",
-                    "default": 4,
-                    "minimum": 1,
-                    "example": 4
-                  },
-                  "page": {
-                    "type": "integer",
-                    "description": "Page number for incident details",
-                    "default": 1,
-                    "minimum": 1,
-                    "example": 1
-                  },
-                  "limit": {
-                    "type": "integer",
-                    "description": "Results per page",
-                    "default": 100,
-                    "minimum": 1,
-                    "maximum": 500,
-                    "example": 100
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Job submitted or cached result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "description": "Job queued response",
-                      "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "jobId": {
-                          "type": "string",
-                          "example": "xyz789abc123"
-                        },
-                        "status": { "type": "string", "example": "queued" },
-                        "message": {
-                          "type": "string",
-                          "example": "Analysis started. Poll /mev/job-status/:jobId for updates."
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "description": "Cached validation results",
-                      "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "cached": { "type": "boolean", "example": true },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "wallet_a": { "type": "string" },
-                            "wallet_b": { "type": "string" },
-                            "summary": {
-                              "type": "object",
-                              "properties": {
-                                "total_incidents": { "type": "integer" },
-                                "frontrun_count": { "type": "integer" },
-                                "backrun_count": { "type": "integer" },
-                                "sandwich_count": { "type": "integer" }
-                              }
-                            },
-                            "incidents": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "slot": { "type": "integer" },
-                                  "timestamp": { "type": "string" },
-                                  "pattern": {
-                                    "type": "string",
-                                    "example": "frontrun"
-                                  },
-                                  "wallet_a_signature": { "type": "string" },
-                                  "wallet_b_signature": { "type": "string" }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
-                "example": {
-                  "error": "Invalid parameters",
-                  "details": "Both wallet_a and wallet_b are required",
-                  "timestamp": "2025-10-02T15:30:45.123Z"
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
         }
       }
     },
@@ -1167,27 +1179,42 @@
         "summary": "Check Sandwich Attacks (Async)",
         "description": "Check one or more transaction signatures for sandwich attacks within a configurable slot range. Submits an async job and returns a jobId. Poll `/mev/job-status/:jobId` for results. Results are cached for 5 minutes. Uses RPC pre-lookup for efficient ClickHouse partition pruning. Detection covers cross-slot and intra-slot (same PoH tick) ordering via entry_index/tx_index.",
         "operationId": "checkSandwich",
-        "tags": ["MEV Analysis"],
-        "security": [{ "SupabaseJWT": [] }],
+        "tags": [
+          "MEV Analysis"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signatures"],
+                "required": [
+                  "signatures"
+                ],
                 "properties": {
                   "signatures": {
                     "oneOf": [
-                      { "type": "string", "description": "Single transaction signature" },
+                      {
+                        "type": "string",
+                        "description": "Single transaction signature"
+                      },
                       {
                         "type": "array",
-                        "items": { "type": "string" },
+                        "items": {
+                          "type": "string"
+                        },
                         "maxItems": 50,
                         "description": "Array of transaction signatures (max 50)"
                       }
                     ],
-                    "example": ["48kLA6633tthDaBHTpzv9qXFkypFajpzyAd7hP8xRu8ggr8VhG5NXUKs7M2SYi57ntDKwPEqFgUGHrvXVd7pzFRE"]
+                    "example": [
+                      "48kLA6633tthDaBHTpzv9qXFkypFajpzyAd7hP8xRu8ggr8VhG5NXUKs7M2SYi57ntDKwPEqFgUGHrvXVd7pzFRE"
+                    ]
                   },
                   "slot_range": {
                     "type": "integer",
@@ -1212,10 +1239,22 @@
                       "type": "object",
                       "description": "Job queued",
                       "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "jobId": { "type": "string", "example": "mev-sandwich-check-abc123-1773915254896" },
-                        "status": { "type": "string", "example": "queued" },
-                        "message": { "type": "string", "example": "Sandwich check started. Poll /mev/job-status/:jobId for updates." }
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "jobId": {
+                          "type": "string",
+                          "example": "mev-sandwich-check-abc123-1773915254896"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "queued"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Sandwich check started. Poll /mev/job-status/:jobId for updates."
+                        }
                       }
                     },
                     {
@@ -1232,21 +1271,35 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "examples": {
                   "missing": {
-                    "value": { "error": "Invalid request", "details": "signatures is required (string or array of strings)" }
+                    "value": {
+                      "error": "Invalid request",
+                      "details": "signatures is required (string or array of strings)"
+                    }
                   },
                   "tooMany": {
-                    "value": { "error": "Invalid request", "details": "Maximum 50 signatures per request" }
+                    "value": {
+                      "error": "Invalid request",
+                      "details": "Maximum 50 signatures per request"
+                    }
                   }
                 }
               }
             }
           },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
         }
       }
     },
@@ -1255,15 +1308,23 @@
         "summary": "Check Sandwich Attack (Sync / Fast)",
         "description": "Synchronous sandwich check for a single transaction. Returns the result directly with no job queue or polling required. Uses tighter parameters for speed: ±1 min timestamp window (vs ±5 min), max ±10 slot range. Ideal for quick single-transaction lookups. Results are cached for 5 minutes.",
         "operationId": "checkSandwichFast",
-        "tags": ["MEV Analysis"],
-        "security": [{ "SupabaseJWT": [] }],
+        "tags": [
+          "MEV Analysis"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signature"],
+                "required": [
+                  "signature"
+                ],
                 "properties": {
                   "signature": {
                     "type": "string",
@@ -1287,7 +1348,9 @@
             "description": "Sandwich check result returned directly",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SandwichCheckResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SandwichCheckResponse"
+                }
               }
             }
           },
@@ -1295,20 +1358,36 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
-                "example": { "error": "Invalid request", "details": "signature is required (single string)" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid request",
+                  "details": "signature is required (single string)"
+                }
               }
             }
           },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          },
           "503": {
             "description": "ClickHouse unavailable",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
-                "example": { "error": "Service unavailable", "details": "ClickHouse not available" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Service unavailable",
+                  "details": "ClickHouse not available"
+                }
               }
             }
           }
@@ -1318,16 +1397,22 @@
     "/mev/job-status/{jobId}": {
       "get": {
         "summary": "Get MEV Job Status",
-        "description": "Poll for job status and retrieve results when complete. Used for discovery, validation, and sandwich check jobs. Job states: waiting (queued), active (processing), completed (results available), failed (error occurred). No subscription check - allows retrieving results even if subscription expires during processing.",
+        "description": "Poll for job status and retrieve results when complete. Used for check-wallet, check-attacker, and check-sandwich jobs. Job states: waiting (queued), active (processing), completed (results available), failed (error occurred).",
         "operationId": "getMevJobStatus",
-        "tags": ["MEV Analysis"],
-        "security": [{ "SupabaseJWT": [] }],
+        "tags": [
+          "MEV Analysis"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "jobId",
             "in": "path",
             "required": true,
-            "description": "Job ID returned from discover-competitors or validate-competition endpoint",
+            "description": "Job ID returned from check-wallet, check-attacker, or check-sandwich endpoint",
             "schema": {
               "type": "string",
               "example": "abc123def456"
@@ -1345,11 +1430,20 @@
                       "type": "object",
                       "description": "Job in progress",
                       "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "id": { "type": "string", "example": "abc123def456" },
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "abc123def456"
+                        },
                         "state": {
                           "type": "string",
-                          "enum": ["waiting", "active"],
+                          "enum": [
+                            "waiting",
+                            "active"
+                          ],
                           "example": "active"
                         },
                         "progress": {
@@ -1368,14 +1462,24 @@
                       "type": "object",
                       "description": "Job completed",
                       "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "id": { "type": "string" },
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "id": {
+                          "type": "string"
+                        },
                         "state": {
                           "type": "string",
-                          "enum": ["completed"],
+                          "enum": [
+                            "completed"
+                          ],
                           "example": "completed"
                         },
-                        "progress": { "type": "number", "example": 100 },
+                        "progress": {
+                          "type": "number",
+                          "example": 100
+                        },
                         "createdAt": {
                           "type": "string",
                           "format": "date-time"
@@ -1390,18 +1494,28 @@
                       "type": "object",
                       "description": "Job failed",
                       "properties": {
-                        "success": { "type": "boolean", "example": true },
-                        "id": { "type": "string" },
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "id": {
+                          "type": "string"
+                        },
                         "state": {
                           "type": "string",
-                          "enum": ["failed"],
+                          "enum": [
+                            "failed"
+                          ],
                           "example": "failed"
                         },
                         "error": {
                           "type": "string",
                           "example": "Analysis timeout after 15 minutes"
                         },
-                        "createdAt": { "type": "string", "format": "date-time" }
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
                       }
                     }
                   ]
@@ -1409,11 +1523,16 @@
               }
             }
           },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
           "404": {
             "description": "Job not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "example": {
                   "error": "Job not found",
                   "details": "No job found with ID: abc123def456",
@@ -1421,8 +1540,7 @@
                 }
               }
             }
-          },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" }
+          }
         }
       }
     },
@@ -1431,15 +1549,23 @@
         "summary": "Analyze Account Write Locks",
         "description": "Analyze write lock patterns for a specific Solana account, showing timeline of write locks, conflict events, competing transactions, and hot scores. Queries can take 2-5 minutes for large time ranges. No caching - queries run fresh against ClickHouse. Requires one of three query modes: time_range, slot, or start_date/end_date.",
         "operationId": "analyzeAccountWriteLocks",
-        "tags": ["Write Locks"],
-        "security": [{ "SupabaseJWT": [] }],
+        "tags": [
+          "Write Locks"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["account"],
+                "required": [
+                  "account"
+                ],
                 "properties": {
                   "account": {
                     "type": "string",
@@ -1450,7 +1576,15 @@
                   "time_range": {
                     "type": "string",
                     "description": "Query mode 1: Time range (mutually exclusive with slot or start_date/end_date)",
-                    "enum": ["1h", "3h", "6h", "12h", "24h", "48h", "72h"],
+                    "enum": [
+                      "1h",
+                      "3h",
+                      "6h",
+                      "12h",
+                      "24h",
+                      "48h",
+                      "72h"
+                    ],
                     "example": "24h"
                   },
                   "slot": {
@@ -1484,7 +1618,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "example": true },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
@@ -1494,15 +1631,28 @@
                         },
                         "query_mode": {
                           "type": "string",
-                          "enum": ["time_range", "slot", "custom_date"],
+                          "enum": [
+                            "time_range",
+                            "slot",
+                            "custom_date"
+                          ],
                           "example": "time_range"
                         },
-                        "query_value": { "type": "string", "example": "24h" },
+                        "query_value": {
+                          "type": "string",
+                          "example": "24h"
+                        },
                         "slot_range": {
                           "type": "object",
                           "properties": {
-                            "min": { "type": "integer", "example": 370500000 },
-                            "max": { "type": "integer", "example": 370537741 }
+                            "min": {
+                              "type": "integer",
+                              "example": 370500000
+                            },
+                            "max": {
+                              "type": "integer",
+                              "example": 370537741
+                            }
                           }
                         },
                         "summary": {
@@ -1628,7 +1778,9 @@
             "description": "Invalid request parameters",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "examples": {
                   "missing_account": {
                     "value": {
@@ -1655,9 +1807,15 @@
               }
             }
           },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
         }
       }
     },
@@ -1666,8 +1824,14 @@
         "summary": "Discover Hot Accounts",
         "description": "Discover the hottest accounts with the most write lock contention across the entire Solana network. Returns ranked list with hot scores and heatmap data for the top 20 accounts. Very expensive queries - can take 2-5+ minutes. No caching. Requires either time_range OR slot parameter.",
         "operationId": "discoverHotAccounts",
-        "tags": ["Write Locks"],
-        "security": [{ "SupabaseJWT": [] }],
+        "tags": [
+          "Write Locks"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1678,7 +1842,12 @@
                   "time_range": {
                     "type": "string",
                     "description": "Query mode 1: Time range (mutually exclusive with slot)",
-                    "enum": ["1h", "3h", "6h", "12h"],
+                    "enum": [
+                      "1h",
+                      "3h",
+                      "6h",
+                      "12h"
+                    ],
                     "example": "6h"
                   },
                   "slot": {
@@ -1708,24 +1877,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "example": true },
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
                         "query_mode": {
                           "type": "string",
-                          "enum": ["time_range", "slot"],
+                          "enum": [
+                            "time_range",
+                            "slot"
+                          ],
                           "example": "time_range"
                         },
-                        "query_value": { "type": "string", "example": "6h" },
+                        "query_value": {
+                          "type": "string",
+                          "example": "6h"
+                        },
                         "slot_range": {
                           "type": "object",
                           "properties": {
-                            "min": { "type": "integer", "example": 370500000 },
-                            "max": { "type": "integer", "example": 370537741 }
+                            "min": {
+                              "type": "integer",
+                              "example": 370500000
+                            },
+                            "max": {
+                              "type": "integer",
+                              "example": 370537741
+                            }
                           }
                         },
-                        "limit": { "type": "integer", "example": 50 },
+                        "limit": {
+                          "type": "integer",
+                          "example": 50
+                        },
                         "hot_accounts": {
                           "type": "array",
                           "description": "Ranked by hot_score descending",
@@ -1812,7 +1999,9 @@
             "description": "Invalid request parameters",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
                 "examples": {
                   "missing_param": {
                     "value": {
@@ -1832,9 +2021,472 @@
               }
             }
           },
-          "401": { "$ref": "#/paths/~1analyze-trade/post/responses/401" },
-          "403": { "$ref": "#/paths/~1analyze-trade/post/responses/403" },
-          "429": { "$ref": "#/paths/~1analyze-trade/post/responses/429" }
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
+        }
+      }
+    },
+    "/mev/check-wallet": {
+      "post": {
+        "summary": "Scan Wallet for Sandwich Attacks",
+        "description": "Scan a wallet's recent DEX trades for sandwich attacks. Uses a hybrid ClickHouse/RPC approach: fetches transaction history via RPC, enriches with ClickHouse timing data, and detects sandwich patterns. Submits an async job — poll `/mev/job-status/:jobId` for results. Max 4 days, max ±10 slots. Results cached for 10 minutes.",
+        "operationId": "checkWallet",
+        "tags": [
+          "MEV Analysis"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "wallet_address"
+                ],
+                "properties": {
+                  "wallet_address": {
+                    "type": "string",
+                    "description": "Wallet address to scan (base58)",
+                    "example": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2"
+                  },
+                  "time_range_days": {
+                    "type": "integer",
+                    "description": "Number of days to analyze",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 4,
+                    "example": 1
+                  },
+                  "slot_window": {
+                    "type": "integer",
+                    "description": "Slot window (±) for detecting attackers. 0 = intra-slot only.",
+                    "default": 4,
+                    "minimum": 0,
+                    "maximum": 10,
+                    "example": 4
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job submitted or cached result returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "Job queued",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "jobId": {
+                          "type": "string",
+                          "example": "mev-wallet-check-abc123-1773926565328"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "queued"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Analysis started. Poll /mev/job-status/:jobId for updates."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Cached result",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "wallet_address": {
+                              "type": "string"
+                            },
+                            "time_range_days": {
+                              "type": "integer"
+                            },
+                            "slot_window": {
+                              "type": "integer"
+                            },
+                            "trades": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "signature": {
+                                    "type": "string",
+                                    "description": "Victim transaction signature"
+                                  },
+                                  "slot": {
+                                    "type": "integer"
+                                  },
+                                  "blockTime": {
+                                    "type": "integer",
+                                    "description": "Unix timestamp"
+                                  },
+                                  "success": {
+                                    "type": "boolean"
+                                  },
+                                  "pools": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "pool_address": {
+                                          "type": "string"
+                                        },
+                                        "pool_label": {
+                                          "type": "string"
+                                        },
+                                        "dex_name": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "incidents": {
+                                    "type": "array",
+                                    "items": {
+                                      "$ref": "#/components/schemas/SandwichIncident"
+                                    }
+                                  },
+                                  "sandwich_detected": {
+                                    "type": "boolean"
+                                  }
+                                }
+                              }
+                            },
+                            "summary": {
+                              "type": "object",
+                              "properties": {
+                                "total_transactions": {
+                                  "type": "integer",
+                                  "description": "Total wallet txs in time range"
+                                },
+                                "total_dex_trades": {
+                                  "type": "integer",
+                                  "description": "Number of DEX trades found"
+                                },
+                                "total_sandwich_attacks": {
+                                  "type": "integer",
+                                  "description": "Number of sandwiched trades"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid request",
+                  "details": "wallet_address is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
+        }
+      }
+    },
+    "/mev/check-attacker": {
+      "post": {
+        "summary": "Profile a Sandwich Attacker",
+        "description": "Analyze a specific attacker's sandwich activity against a victim wallet. Returns statistics: sandwiches by DEX, by validator/client, by pool, timing patterns, and % of victim trades sandwiched. Reuses cached check-wallet data when available.",
+        "operationId": "checkAttacker",
+        "tags": [
+          "MEV Analysis"
+        ],
+        "security": [
+          {
+            "SupabaseJWT": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "attacker_address",
+                  "victim_address"
+                ],
+                "properties": {
+                  "attacker_address": {
+                    "type": "string",
+                    "description": "Attacker wallet address (from check-wallet results)",
+                    "example": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs"
+                  },
+                  "victim_address": {
+                    "type": "string",
+                    "description": "Victim wallet address",
+                    "example": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2"
+                  },
+                  "time_range_days": {
+                    "type": "integer",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 4,
+                    "description": "Number of days to analyze"
+                  },
+                  "slot_window": {
+                    "type": "integer",
+                    "default": 4,
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Slot window (±) for detection"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job submitted or cached result returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "Job queued",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "jobId": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "queued"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Cached result",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "attacker_address": {
+                              "type": "string"
+                            },
+                            "victim_address": {
+                              "type": "string"
+                            },
+                            "summary": {
+                              "type": "object",
+                              "properties": {
+                                "total_sandwiches": {
+                                  "type": "integer",
+                                  "description": "Sandwiches by this attacker"
+                                },
+                                "total_victim_dex_trades": {
+                                  "type": "integer",
+                                  "description": "Total victim DEX trades in range"
+                                },
+                                "victim_trades_sandwiched_pct": {
+                                  "type": "number",
+                                  "description": "% of victim trades sandwiched by this attacker"
+                                },
+                                "total_incidents": {
+                                  "type": "integer",
+                                  "description": "Total incident legs (frontrun + backrun)"
+                                }
+                              }
+                            },
+                            "timing": {
+                              "type": "object",
+                              "properties": {
+                                "avg_poh_tick_offset": {
+                                  "type": "integer"
+                                },
+                                "min_poh_tick_offset": {
+                                  "type": "integer"
+                                },
+                                "max_poh_tick_offset": {
+                                  "type": "integer"
+                                }
+                              }
+                            },
+                            "by_dex": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "dex_name": {
+                                    "type": "string",
+                                    "example": "Pump.fun"
+                                  },
+                                  "count": {
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "by_validator": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "leader_pubkey": {
+                                    "type": "string",
+                                    "description": "Validator public key"
+                                  },
+                                  "client_type": {
+                                    "type": "string",
+                                    "description": "Validator client (e.g. jito, agave)",
+                                    "example": "jito"
+                                  },
+                                  "count": {
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "by_pool": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "pool_address": {
+                                    "type": "string"
+                                  },
+                                  "pool_label": {
+                                    "type": "string"
+                                  },
+                                  "count": {
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "trades": {
+                              "type": "array",
+                              "description": "Trades where this attacker sandwiched the victim",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "signature": {
+                                    "type": "string"
+                                  },
+                                  "slot": {
+                                    "type": "integer"
+                                  },
+                                  "blockTime": {
+                                    "type": "integer"
+                                  },
+                                  "pools": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object"
+                                    }
+                                  },
+                                  "incidents": {
+                                    "type": "array",
+                                    "items": {
+                                      "$ref": "#/components/schemas/SandwichIncident"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "missing_attacker": {
+                    "value": {
+                      "error": "Invalid request",
+                      "details": "attacker_address is required"
+                    }
+                  },
+                  "same_address": {
+                    "value": {
+                      "error": "Invalid request",
+                      "details": "attacker_address and victim_address must be different"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/403"
+          },
+          "429": {
+            "$ref": "#/paths/~1analyze-trade/post/responses/429"
+          }
         }
       }
     }
@@ -1858,7 +2510,7 @@
     },
     {
       "name": "MEV Analysis",
-      "description": "Advanced MEV competitor discovery and validation (async job queue)"
+      "description": "Sandwich attack detection: scan wallets, check transactions, and profile attackers (async job queue)"
     },
     {
       "name": "Write Locks",

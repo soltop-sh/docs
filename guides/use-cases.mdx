@@ -1,23 +1,304 @@
 ---
 title: "Use Cases"
-description: "Learn how to detect front-running, sandwich attacks, and analyze MEV patterns"
+description: "Learn how to detect sandwich attacks, scan wallets, and investigate MEV attackers on Solana"
 ---
 
 # Use Cases
 
-This guide shows practical use cases for the Blockline MEV Analytics API. More detailed content coming soon.
+Practical workflows for detecting and investigating MEV activity using the Blockline API.
+
+---
+
+## Detect & Investigate Sandwich Attacks
+
+The most common workflow: scan your wallet for sandwich attacks, then drill into specific attackers.
+
+### The 3-Step Flow
+
+<Steps>
+  <Step title="Scan your wallet">
+    Use `check-wallet` to find all sandwiched trades in the last 1–4 days.
+  </Step>
+  <Step title="Review results">
+    Identify which attackers are targeting you and how often.
+  </Step>
+  <Step title="Investigate an attacker">
+    Use `check-attacker` to get a full profile: which DEXes, validators, pools, and timing patterns.
+  </Step>
+</Steps>
+
+---
+
+### Step 1: Scan your wallet
+
+Submit your wallet address to find all DEX trades that were sandwiched.
+
+```bash
+curl -X POST https://api.soltop.sh/mev/check-wallet \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "wallet_address": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2",
+    "time_range_days": 1,
+    "slot_window": 1
+  }'
+```
+
+This returns a `jobId` — poll `/mev/job-status/:jobId` until the job completes:
+
+```bash
+curl https://api.soltop.sh/mev/job-status/YOUR_JOB_ID \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+<Accordion title="Example response (trimmed)">
+```json
+{
+  "success": true,
+  "state": "completed",
+  "data": {
+    "wallet_address": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2",
+    "time_range_days": 1,
+    "slot_window": 1,
+    "trades": [
+      {
+        "signature": "4NNmrXrUnYW2NkF9g9Rj7Na73H6tyesvzLuep2CVqbTuEAGai516HrjfbaXu46WwnUz3435j9sQPEPDQvAKWAT5z",
+        "slot": 408268795,
+        "blockTime": 1774246221,
+        "success": true,
+        "pools": [
+          {
+            "pool_address": "G7sjgUBSuNDfnv9PVQunFmCe5QN41gjyixgcJyaY8dqD",
+            "pool_label": "SOL Pool (Pump.fun)",
+            "dex_name": "Pump.fun"
+          }
+        ],
+        "incidents": [
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "0",
+            "interaction_type": "sandwich_frontrun",
+            "pool_label": "SOL Pool (Pump.fun)",
+            "success": true
+          },
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "5",
+            "interaction_type": "sandwich_backrun",
+            "pool_label": "SOL Pool (Pump.fun)",
+            "success": true
+          }
+        ],
+        "sandwich_detected": true
+      }
+    ],
+    "summary": {
+      "total_transactions": 823,
+      "total_dex_trades": 720,
+      "total_sandwich_attacks": 267
+    }
+  }
+}
+```
+</Accordion>
+
+**Key takeaway:** Out of 823 transactions, 720 were DEX trades, and **267 were sandwiched** — that's 37% of all trades. The `incidents` array shows the attacker wallet `DDm1Bc9...` placed transactions both before (`sandwich_frontrun`) and after (`sandwich_backrun`) the victim's trade in the same slot.
+
+<Tip>
+  A `poh_tick_offset` of `0` means the attacker's transaction was in the **exact same PoH tick** as the victim — this is intra-slot sandwich detection, unique to Blockline's PoH-level timing data.
+</Tip>
+
+---
+
+### Step 2: Quick-check a specific transaction
+
+Already know which transaction to check? Use the synchronous `check-sandwich-fast` endpoint for an instant result — no job polling needed.
+
+```bash
+curl -X POST https://api.soltop.sh/mev/check-sandwich-fast \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "signature": "4NNmrXrUnYW2NkF9g9Rj7Na73H6tyesvzLuep2CVqbTuEAGai516HrjfbaXu46WwnUz3435j9sQPEPDQvAKWAT5z",
+    "slot_range": 0
+  }'
+```
+
+<Accordion title="Example response">
+```json
+{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "signature": "4NNmrXrUnYW2NkF9g9Rj7Na73H6tyesvzLuep2CVqbTuEAGai516HrjfbaXu46WwnUz3435j9sQPEPDQvAKWAT5z",
+        "found": true,
+        "slot": 408268795,
+        "poh_tick": "26129202902",
+        "signer": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2",
+        "pools": [
+          {
+            "pool_address": "G7sjgUBSuNDfnv9PVQunFmCe5QN41gjyixgcJyaY8dqD",
+            "pool_label": "SOL Pool (Pump.fun)",
+            "dex_name": "Pump.fun"
+          }
+        ],
+        "incidents": [
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "0",
+            "interaction_type": "sandwich_frontrun",
+            "success": true
+          },
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "0",
+            "interaction_type": "sandwich_frontrun",
+            "success": false
+          },
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "5",
+            "interaction_type": "sandwich_backrun",
+            "success": true
+          },
+          {
+            "attacker_signer": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+            "poh_tick_offset": "5",
+            "interaction_type": "sandwich_backrun",
+            "success": false
+          }
+        ],
+        "sandwich_detected": true,
+        "success": true
+      }
+    ],
+    "summary": {
+      "total_checked": 1,
+      "total_found": 1,
+      "total_sandwich_attacks": 1,
+      "slot_range_used": 0
+    }
+  }
+}
+```
+</Accordion>
+
+Notice the attacker (`DDm1Bc9...`) sent **multiple attempts** — two frontrun and two backrun transactions. One of each failed (`success: false`), which is typical MEV bot behavior: they spam transactions to maximize their chance of landing.
+
+<Info>
+  **`slot_range: 0`** means intra-slot only — the attacker's transactions must be in the **same slot** as the victim. Use higher values (e.g., `1` or `5`) to catch cross-slot sandwiches.
+</Info>
+
+---
+
+### Step 3: Investigate the attacker
+
+Now that you've identified `DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs` as a sandwich attacker, get their full profile.
+
+```bash
+curl -X POST https://api.soltop.sh/mev/check-attacker \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "attacker_address": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+    "victim_address": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2",
+    "time_range_days": 1,
+    "slot_window": 1
+  }'
+```
+
+<Accordion title="Example response">
+```json
+{
+  "success": true,
+  "state": "completed",
+  "data": {
+    "attacker_address": "DDm1Bc9KuXB7Q2UbxyMRLGmbcV2J93xmiWDPt7Edhqbs",
+    "victim_address": "8ENw3qJSzWGUV31BW5u2YEmsyp9XKjH1FxuwLhhwwMe2",
+    "summary": {
+      "total_sandwiches": 1,
+      "total_victim_dex_trades": 727,
+      "victim_trades_sandwiched_pct": 0.1,
+      "total_incidents": 7
+    },
+    "timing": {
+      "avg_poh_tick_offset": 38,
+      "min_poh_tick_offset": 0,
+      "max_poh_tick_offset": 98
+    },
+    "by_dex": [
+      { "dex_name": "Pump.fun", "count": 1 }
+    ],
+    "by_validator": [
+      {
+        "leader_pubkey": "2gDeeRa3mwPPtw1CMWPkEhRWo9v5izNBBfEXanr8uibX",
+        "client_type": "Jito_BAM (6)",
+        "count": 1
+      }
+    ],
+    "by_pool": [
+      {
+        "pool_address": "G7sjgUBSuNDfnv9PVQunFmCe5QN41gjyixgcJyaY8dqD",
+        "pool_label": "SOL Pool (Pump.fun)",
+        "count": 1
+      }
+    ],
+    "trades": [
+      {
+        "signature": "4NNmrXrUnYW2NkF9g9Rj7Na73H6tyesvzLuep2CVqbTuEAGai516HrjfbaXu46WwnUz3435j9sQPEPDQvAKWAT5z",
+        "slot": 408268795,
+        "blockTime": 1774246221,
+        "incidents": [
+          {
+            "interaction_type": "sandwich_frontrun",
+            "poh_tick_offset": "0",
+            "success": true
+          },
+          {
+            "interaction_type": "sandwich_backrun",
+            "poh_tick_offset": "5",
+            "success": true
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+</Accordion>
+
+The attacker profile reveals:
+
+| Insight | Value |
+|---|---|
+| **Sandwiches against you** | 1 in the last 24h |
+| **Your trades sandwiched** | 0.1% of your 727 DEX trades |
+| **DEX targeted** | Pump.fun |
+| **Validator** | Jito_BAM — runs via Jito bundle auctions |
+| **Timing precision** | PoH offset 0–98 ticks (avg 38) |
+| **Attack pattern** | Multiple tx attempts per sandwich (7 incidents for 1 sandwich) |
+
+<Warning>
+  The `by_validator` field shows which **block producers** the attacker lands sandwiches through. A high concentration on Jito validators suggests the attacker uses **Jito bundles** to guarantee transaction ordering — a common MEV extraction technique on Solana.
+</Warning>
+
+---
+
+## Choosing the Right Endpoint
+
+| Use Case | Endpoint | Speed | Notes |
+|---|---|---|---|
+| "Was this specific tx sandwiched?" | `check-sandwich-fast` | Instant (~1s) | Single tx, sync, max ±10 slots |
+| "Check multiple txs for sandwiches" | `check-sandwich` | Async (5-30s) | Up to 50 txs, ±1000 slots |
+| "Scan all my recent trades" | `check-wallet` | Async (30-120s) | Full wallet scan, 1-4 days |
+| "Who is this attacker?" | `check-attacker` | Async (30-120s) | Attacker profile with validator data |
+
+---
 
 ## Front-Running Detection
 
 Analyze transactions that occurred before yours in the same slot to detect potential front-running.
-
-## Sandwich Attack Detection
-
-Identify if your transaction was sandwiched by detecting matching signers before and after your trade.
-
-## Competition Analysis
-
-Study competitor behavior and transaction patterns in your target markets.
 
 ## Speed Ranking
 
@@ -27,10 +308,6 @@ Compare transaction timing and PoH tick offsets to understand execution speed ad
 
 Identify recurring MEV patterns and bot behavior in specific markets.
 
-## Financial Impact Analysis
-
-Calculate the financial impact of MEV activity on your trades using balance change data.
-
 <Note>
-  **Detailed examples coming soon!** Check back for comprehensive guides on each use case.
+  More detailed guides for these use cases are coming soon.
 </Note>
