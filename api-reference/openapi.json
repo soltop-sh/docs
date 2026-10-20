@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "contact": {
       "name": "Blockline Support",
-      "url": "https://blockline.soltop.sh"
+      "url": "https://blockline.sh"
     }
   },
   "servers": [
@@ -26,7 +26,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "API Key",
-        "description": "API Key authentication. Format: `sk_live_xxx` (production) or `sk_test_xxx` (testing). Obtain your API key from the [Blockline Dashboard](https://blockline.soltop.sh/dashboard/api-keys)."
+        "description": "API Key authentication. Format: `sk_live_xxx` (production) or `sk_test_xxx` (testing). Obtain your API key from the [Blockline Dashboard](https://blockline.sh/api-keys)."
       },
       "SupabaseJWT": {
         "type": "http",
