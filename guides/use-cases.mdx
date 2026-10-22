@@ -105,7 +105,7 @@ curl https://api.soltop.sh/mev/job-status/YOUR_JOB_ID \
 **Key takeaway:** Out of 823 transactions, 720 were DEX trades, and **267 were sandwiched** — that's 37% of all trades. The `incidents` array shows the attacker wallet `DDm1Bc9...` placed transactions both before (`sandwich_frontrun`) and after (`sandwich_backrun`) the victim's trade in the same slot.
 
 <Tip>
-  When a leg's `slot` equals the victim's, the attacker landed **in the same block** as the victim. Newer responses also carry `position_offset` on each leg: `slots` apart and, in the same block, `txs` before (negative) or after (positive) the victim.
+  When a leg's `slot` equals the victim's, the attacker landed **in the same block** as the victim. Newer responses also carry `position_offset` on each leg: `slots` apart and, in the same block, `txs` before (negative) or after (positive) the victim. `txs` is `null` when the leg landed in a different slot from the victim.
 </Tip>
 
 ---

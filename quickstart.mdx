@@ -143,10 +143,11 @@ The API returns all transactions that touched the same market within ±4 slots o
 
 ### Key Fields Explained
 
-<ResponseField name="block_tx_index" type="integer">
+<ResponseField name="block_tx_index" type="integer | null">
   The transaction's place in its block. Within a slot, a lower number landed
   earlier. Use this (and `position_offset` on sandwich legs) to tell who landed
-  first.
+  first. `null` when we don't know the position, for example on older
+  transactions.
 </ResponseField>
 
 <ResponseField name="poh_tick_offset" type="integer">
