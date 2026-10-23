@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "contact": {
       "name": "Blockline Support",
-      "url": "https://blockline.soltop.sh"
+      "url": "https://blockline.sh"
     }
   },
   "servers": [
@@ -26,7 +26,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "API Key",
-        "description": "API Key authentication. Format: `sk_live_xxx` (production) or `sk_test_xxx` (testing). Obtain your API key from the [Blockline Dashboard](https://blockline.soltop.sh/dashboard/api-keys)."
+        "description": "API Key authentication. Format: `sk_live_xxx` (production) or `sk_test_xxx` (testing). Obtain your API key from the [Blockline Dashboard](https://blockline.sh/api-keys)."
       },
       "SupabaseJWT": {
         "type": "http",
@@ -544,114 +544,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/backfill-transaction": {
-      "post": {
-        "summary": "Backfill Transaction",
-        "description": "Backfills transaction data for a given signature and account into the analytics database. Useful for ensuring specific transactions are tracked and analyzed within a specified slot range. The backfill runs asynchronously and returns immediately with a request ID for tracking.",
-        "operationId": "backfillTransaction",
-        "tags": [
-          "Data Management"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "signature",
-                  "account"
-                ],
-                "properties": {
-                  "signature": {
-                    "type": "string",
-                    "description": "Transaction signature to backfill (base58, 87-88 characters)",
-                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{87,88}$",
-                    "example": "pHXgUjY4cVvi5orXuK3b66MBhF2W3MpXruRGKodqTWze7354iVQ66k1rWCzyWTU7UDeebojPTpW9ZmVv9Dn12cg"
-                  },
-                  "account": {
-                    "type": "string",
-                    "description": "The market/account ID to analyze (base58, 32-44 characters)",
-                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
-                    "example": "FnmStvzQ27Pm4U8r3M6gPD7mnk6ST6HwraPsoNmYpump"
-                  },
-                  "slotRange": {
-                    "type": "integer",
-                    "description": "Number of slots before/after to analyze",
-                    "default": 2,
-                    "minimum": 1,
-                    "maximum": 100,
-                    "example": 2
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Backfill initiated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "status": {
-                          "type": "string",
-                          "example": "Backfill started"
-                        },
-                        "query_info": {
-                          "type": "object",
-                          "properties": {
-                            "signature": {
-                              "type": "string"
-                            },
-                            "account": {
-                              "type": "string"
-                            },
-                            "slot_range": {
-                              "type": "integer"
-                            },
-                            "request_id": {
-                              "type": "string",
-                              "example": "abc123xyz"
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "string",
-                          "example": "Backfill initiated. Check logs for completion status."
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/paths/~1analyze-trade/post/responses/400"
-          },
-          "401": {
-            "$ref": "#/paths/~1analyze-trade/post/responses/401"
-          },
-          "403": {
-            "$ref": "#/paths/~1analyze-trade/post/responses/403"
           }
         }
       }
@@ -2503,10 +2395,6 @@
     {
       "name": "Wallets",
       "description": "Wallet transaction history"
-    },
-    {
-      "name": "Data Management",
-      "description": "Backfill and data operations"
     },
     {
       "name": "MEV Analysis",

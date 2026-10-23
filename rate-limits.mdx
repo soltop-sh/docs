@@ -19,7 +19,6 @@ Blockline implements rate limiting to ensure fair usage and maintain API perform
 | Endpoint                           | Rate Limit     | Window     |
 | ---------------------------------- | -------------- | ---------- |
 | `POST /analyze-trade`              | **6 requests** | Per minute |
-| `POST /backfill-transaction`       | **No limit**   | -          |
 | `GET /transaction/:signature`      | **6 requests** | Per minute |
 | `POST /wallet/:address/signatures` | **6 requests** | Per minute |
 | `POST /enhance-metadata`           | **6 requests** | Per minute |
@@ -219,20 +218,6 @@ response = make_request_with_retry(
   </Accordion>
 </AccordionGroup>
 
-## Special Case: /backfill-transaction
-
-<Warning>
-  The `/backfill-transaction` endpoint currently has **no rate limiting**.
-  However, this may change in the future. Use responsibly and avoid overwhelming
-  the system.
-</Warning>
-
-Since backfill operations are async and resource-intensive:
-
-- Use sparingly and only when necessary
-- Don't make rapid concurrent backfill requests
-- Monitor the request ID returned for completion status
-
 ## Upgrading Limits
 
 Need higher rate limits for production workloads?
@@ -240,7 +225,7 @@ Need higher rate limits for production workloads?
 <Card
   title="Contact Us for Enterprise Plans"
   icon="building"
-  href="https://blockline.soltop.sh/contact"
+  href="https://blockline.sh"
 >
   Enterprise plans offer higher rate limits, dedicated support, and SLAs.
   <br />
@@ -249,7 +234,7 @@ Need higher rate limits for production workloads?
 
 ## Monitoring Your Usage
 
-Track your API usage in the [Dashboard](https://blockline.soltop.sh/dashboard):
+Track your API usage in the [Dashboard](https://blockline.sh/dashboard):
 
 - **Request count** per endpoint
 - **Rate limit hits** over time

@@ -9,7 +9,7 @@ Get up and running with the Blockline API in three simple steps. You'll learn ho
 
 ## Prerequisites
 
-- A Blockline account ([sign up here](https://blockline.soltop.sh))
+- A Blockline account ([sign up here](https://blockline.sh))
 - A Solana transaction signature to analyze
 - Basic knowledge of HTTP APIs and curl/your programming language of choice
 
@@ -17,13 +17,13 @@ Get up and running with the Blockline API in three simple steps. You'll learn ho
 
 <Steps>
   <Step title="Sign up for Blockline">
-    Visit [blockline.soltop.sh](https://blockline.soltop.sh) and create an account. New users get a free trial to explore the API.
+    Visit [blockline.sh](https://blockline.sh) and create an account. New users get a free trial to explore the API.
   </Step>
 
 {" "}
 <Step title="Navigate to API Keys">
   Once logged in, go to [Dashboard → API
-  Keys](https://blockline.soltop.sh/dashboard/api-keys)
+  Keys](https://blockline.sh/api-keys)
 </Step>
 
   <Step title="Generate a new key">
@@ -143,10 +143,17 @@ The API returns all transactions that touched the same market within ±4 slots o
 
 ### Key Fields Explained
 
+<ResponseField name="block_tx_index" type="integer | null">
+  The transaction's place in its block. Within a slot, a lower number landed
+  earlier. Use this (and `position_offset` on sandwich legs) to tell who landed
+  first. `null` when we don't know the position, for example on older
+  transactions.
+</ResponseField>
+
 <ResponseField name="poh_tick_offset" type="integer">
-  **Negative** = transaction happened before yours (potential front-runner)
-  **Zero** = your transaction **Positive** = transaction happened after yours
-  (potential back-runner)
+  An older timing field, still returned. **Negative** = before yours,
+  **zero** = same tick, **positive** = after yours. It isn't a reliable order
+  within a block; prefer `block_tx_index`.
 </ResponseField>
 
 <ResponseField name="slot_offset" type="integer">
@@ -166,7 +173,7 @@ The API returns all transactions that touched the same market within ±4 slots o
 <Accordion title="403 Forbidden">
   **Cause**: Subscription required or expired **Solution**: Ensure your
   subscription is active (trial, active, or grace period) at [your
-  dashboard](https://blockline.soltop.sh/dashboard)
+  dashboard](https://blockline.sh/dashboard)
 </Accordion>
 
 {" "}
@@ -223,4 +230,4 @@ Now that you've made your first request, explore more capabilities:
 - Read the full [API Reference](/api-reference/openapi)
 - Explore [Use Cases & Patterns](/guides/use-cases)
 - Check [Error Handling Guide](/guides/error-handling)
-- Visit the [Dashboard](https://blockline.soltop.sh)
+- Visit the [Dashboard](https://blockline.sh)

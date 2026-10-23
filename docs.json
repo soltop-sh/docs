@@ -58,7 +58,7 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://blockline.soltop.sh",
+          "href": "https://blockline.sh",
           "icon": "chart-line"
         },
         {
@@ -77,13 +77,13 @@
     "links": [
       {
         "label": "Get API Key",
-        "href": "https://blockline.soltop.sh/dashboard/api-keys"
+        "href": "https://blockline.sh/api-keys"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://blockline.soltop.sh"
+      "href": "https://blockline.sh"
     }
   },
   "contextual": {
