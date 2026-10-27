@@ -55,10 +55,6 @@
             "type": "string",
             "description": "PoH tick position (BigInt as string)"
           },
-          "poh_tick_offset": {
-            "type": "string",
-            "description": "PoH tick distance from victim (negative = before)"
-          },
           "interaction_type": {
             "type": "string",
             "enum": [
@@ -79,7 +75,8 @@
             "type": "boolean",
             "description": "Whether the attacker's transaction executed successfully"
           }
-        }
+        },
+        "description": "One leg of a detected sandwich: an attacker's front-run or back-run transaction. For each attacker, the response contains the front and back legs of its sandwich."
       },
       "SandwichCheckResult": {
         "type": "object",
