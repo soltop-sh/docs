@@ -405,16 +405,6 @@
                                     {
                                       "type": "object",
                                       "properties": {
-                                        "poh_tick_offset": {
-                                          "type": "integer",
-                                          "description": "PoH tick difference from your transaction"
-                                        },
-                                        "matched_in_read": {
-                                          "type": "boolean"
-                                        },
-                                        "matched_in_written": {
-                                          "type": "boolean"
-                                        },
                                         "is_original": {
                                           "type": "boolean"
                                         }
@@ -439,12 +429,6 @@
                               "type": "integer"
                             },
                             "slots_with_activity": {
-                              "type": "integer"
-                            },
-                            "earliest_poh_tick_offset": {
-                              "type": "integer"
-                            },
-                            "latest_poh_tick_offset": {
                               "type": "integer"
                             }
                           }
