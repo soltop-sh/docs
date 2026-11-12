@@ -1695,7 +1695,7 @@
     "/api/write-locks/hot-accounts": {
       "post": {
         "summary": "Discover Hot Accounts",
-        "description": "Discover the hottest accounts with the most write lock contention across the entire Solana network. Returns ranked list with hot scores and heatmap data for the top 20 accounts. Very expensive queries - can take 2-5+ minutes. No caching. Requires either time_range OR slot parameter.",
+        "description": "Discover the accounts with the most write lock contention across the Solana network around one slot. Returns a ranked list with hot scores and heatmap data for the top 20 accounts. Send exactly one of `slot` or `time_range`. **Send `slot`: it is the supported way.** `time_range` is still accepted, but it currently answers 400 \"Time range too wide\" for every value, because finding hot accounts over a time window reads more data than one request may.",
         "operationId": "discoverHotAccounts",
         "tags": [
           "Write Locks"
@@ -1714,18 +1714,17 @@
                 "properties": {
                   "time_range": {
                     "type": "string",
-                    "description": "Query mode 1: Time range (mutually exclusive with slot)",
+                    "description": "Query mode 1: a time window ending now (mutually exclusive with slot). Currently answers 400 \"Time range too wide\" for every value: send `slot` instead.",
                     "enum": [
                       "1h",
                       "3h",
                       "6h",
                       "12h"
-                    ],
-                    "example": "6h"
+                    ]
                   },
                   "slot": {
                     "type": "integer",
-                    "description": "Query mode 2: Specific slot number (mutually exclusive with time_range)",
+                    "description": "Query mode 2, the supported way: a slot number. Hot accounts are found within about a minute either side of that slot's time (mutually exclusive with time_range).",
                     "minimum": 1,
                     "example": 370537741
                   },
@@ -1763,11 +1762,19 @@
                             "time_range",
                             "slot"
                           ],
-                          "example": "time_range"
+                          "example": "slot"
                         },
                         "query_value": {
-                          "type": "string",
-                          "example": "6h"
+                          "oneOf": [
+                            {
+                              "type": "integer"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ],
+                          "description": "The `slot` sent, or the `time_range` sent",
+                          "example": 370537741
                         },
                         "slot_range": {
                           "type": "object",
@@ -1869,27 +1876,58 @@
             }
           },
           "400": {
-            "description": "Invalid request parameters",
+            "description": "Invalid request parameters, or a time range too wide to answer",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
+                  "time_range_too_wide": {
+                    "summary": "time_range sent (every value, for now)",
+                    "value": {
+                      "error": "Time range too wide",
+                      "details": [
+                        "Finding hot accounts over this time range reads more data than one request may. Send a slot number in `slot` instead of `time_range`."
+                      ],
+                      "timestamp": "2025-10-02T15:30:45.123Z"
+                    }
+                  },
                   "missing_param": {
                     "value": {
-                      "error": "Missing required parameter",
-                      "details": "Must provide either time_range or slot",
+                      "error": "Validation failed",
+                      "details": [
+                        "Either time_range or slot must be provided"
+                      ],
                       "timestamp": "2025-10-02T15:30:45.123Z"
                     }
                   },
                   "conflicting_params": {
                     "value": {
-                      "error": "Invalid parameters",
-                      "details": "Cannot provide both time_range and slot",
+                      "error": "Validation failed",
+                      "details": [
+                        "Cannot provide both time_range and slot"
+                      ],
                       "timestamp": "2025-10-02T15:30:45.123Z"
                     }
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The slot has no transactions in the retention window",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Slot not found",
+                  "details": [
+                    "slot 370537741 has no transactions in the retention window"
+                  ],
+                  "timestamp": "2025-10-02T15:30:45.123Z"
                 }
               }
             }
